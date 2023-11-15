@@ -1,0 +1,53 @@
+{% extends "perry.html" %}
+
+{% block titulo %}  Perfil do {{ user.username }} {% endblock %}
+
+
+{% block body %}
+
+    <h1> Faaala {{ user.username }}!</h1>
+    <a href=" {{ url_for('homepage') }} "> HOME </a>
+
+
+    {% if form %}
+        <h2> MEU PERFIL </h2>
+
+        <form method="POST" enctype="multipart/form-data">
+            {{ form.csrf_token }}
+
+            {{ form.text.label() }}
+            {{ form.text() }}
+
+            {{ form.photo.label() }}
+            {{ form.photo() }}
+
+            {{ form.btn() }}
+        </form>
+
+    {% endif %}
+
+    {% for post in user.posts %}
+        {% if cur_user %}
+            <form action="{{ url_for('delete', _user_id=user.id, post_id=post.id) }}" method="post">
+                <p>{{post.post_text}}</p>
+                <img class="img-thumbnail rounded" src="{{ url_for('static', filename='fotos_dos_posts/{}'.format(post.post_img)) }}">
+                <br>
+                <input type="submit" value="Excluir">
+                <p>Likes: {{ post.likes }}</p>
+                <p>Dislikes: {{ post.dislikes }}</p>
+            </form>
+        {% else %}
+                <form action="{{ url_for('like', _user_id=user.id, post_id=post.id) }}" method="post">
+                    <p>{{post.post_text}}</p>
+                    <img class="img-thumbnail rounded" src="{{ url_for('static', filename='fotos_dos_posts/{}'.format(post.post_img)) }}">
+                    <br>
+                    <input type="submit" value="Like ({{ post.likes }})">
+                </form>
+                <form action="{{ url_for('dislike', _user_id=user.id, post_id=post.id) }}" method="post">
+                    <input type="submit" value="Dislike ({{ post.dislikes }})">
+                </form>
+        {% endif %}
+    {% endfor %}
+
+
+{% endblock %}
